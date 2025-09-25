@@ -25,6 +25,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  trips         Trip[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,5 +80,39 @@ model VerificationToken {
 
 // 3. [npx prisma generate] => generates the client version of prisma for models, and change the import from generated/prisma/client
 
+// when you change the schema.prisma you should always do the above two steps. To get updated fields
+
 
 // 4. [npm exec auth secret] => to generate random AUTH_SECRET 
+
+
+
+// Model in prisma are tables
+
+model Trip {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  imageUrl    String?
+  startDate   DateTime
+  endDate     DateTime
+  // user can create multiple trips, so when user creates a trip then that trip should only reffered to them and it should linked to them.
+  user        User      @relation(fields: [userId], references: [id] )
+  userId      String
+
+  locations   Location[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Location {
+  id String @id @default(cuid())
+  locationTitle String
+  lat Float
+  lng Float
+  trip Trip @relation(fields: [tripId], references: [id] )
+  tripId String
+  order Int @default(0)
+  createdAt DateTime @default(now())
+}
